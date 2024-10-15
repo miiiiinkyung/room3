@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도둑 찾기</title>
+    <style type="text/css">
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #blackout {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0.9;
+            display: none; /* Initially hidden */
+            z-index: 1; /* Set z-index for blackout */
+        }
+
+        /* text1, text2 스타일 */
+        .text1-2 {
+            position: absolute;
+            size: 50%;
+            top: 50%;
+            left: 60%;
+            transform: translate(-50%, -50%);
+            display: none; /* Initially hidden */
+            z-index: 2; /* Set a higher z-index for text1 and text2 */
+        }
+
+        /* text3, text4 스타일 */
+        .text3-4 {
+            position: absolute;
+            size: 50%;
+            top: 70%;
+            left: 95%;
+            transform: translate(-50%, -50%);
+            display: none; /* Initially hidden */
+            z-index: 5; /* Set a higher z-index for text3 and text4 */
+        }
+
+        /* 클릭할 이미지 */
+        #clickableImage {
+            position: absolute;
+            top: 67%;
+            left: 86%;
+            transform: translate(-50%, -50%);
+            cursor: pointer; /* 클릭할 수 있는 커서로 변경 */
+            z-index: 3; /* 텍스트보다 위에 보이도록 */
+        }
+
+        /* 마우스를 따라다니는 원 (손전등 효과) */
+        #circle {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0); /* 0% 투명도 (투명) */
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.9); /* 외부는 90% 투명도 */
+            pointer-events: none;
+            z-index: 4; /* Set a higher z-index for the circle */
+            display: none; /* Initially hidden */
+        }
+
+        body {
+    cursor: url('mouse.png') 10 10, auto; /* 핫스팟 위치를 4, 4로 설정한 예시 */
+}
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <img id="background" src="1.png" alt="Background Image">
+        <div id="blackout"></div>
+        
+        <!-- text1과 text2 -->
+        <img class="text1-2" id="text" src="text.png" alt="Text Image">
+        <img class="text1-2" id="text2" src="text2.png" alt="Text2 Image">
+        
+        <!-- text3와 text4 -->
+        <img class="text3-4" id="text3" src="text3.png" alt="Text3 Image">
+        <img class="text3-4" id="text4" src="text4.png" alt="Text4 Image">
+        
+        <img id="clickableImage" src="cat1.png" alt="Clickable Cat Image">
+    </div>
+    <div id="circle"></div>
+
+
+    <script>
+        const blackout = document.getElementById('blackout');
+
+        // 2초 후 검정 배경이 깜빡임 (2번 깜빡이고, 마지막에 보임)
+        setTimeout(() => {
+            // 첫 번째 깜빡임
+            blackout.style.display = 'block';
+            blackout.style.opacity = '0.9'; // 보이게 설정
+            setTimeout(() => {
+                blackout.style.opacity = '0'; // 사라짐
+                setTimeout(() => {
+                    // 두 번째 깜빡임
+                    blackout.style.opacity = '0.9'; // 다시 보임
+                    setTimeout(() => {
+                        blackout.style.opacity = '0'; // 다시 사라짐
+                        setTimeout(() => {
+                            // 세 번째에 계속 보이게
+                            blackout.style.opacity = '0.9'; // 계속 보이도록 설정
+                        }, 600); // 세 번째에서의 딜레이
+                    }, 600); // 두 번째에서의 딜레이
+                }, 200); // 첫 번째에서의 딜레이
+            }, 200); // 초기 딜레이
+        }, 2000); // 처음 딜레이 (2초 후 첫 깜빡임)
+
+        // 3초 후 첫 번째 텍스트 이미지 표시
+        setTimeout(() => {
+            document.getElementById('text').style.display = 'block';
+        }, 5000);  
+
+        // 6초 후 두 번째 텍스트 표시
+        setTimeout(() => {
+            document.getElementById('text2').style.display = 'block';
+        }, 6000);  // 6초 후 두 번째 텍스트 등장
+
+        // 8초 후 손전등 효과 활성화
+        setTimeout(() => {
+            const circle = document.getElementById('circle');
+            circle.style.display = 'block'; // 원형 표시 나타나기
+            
+            // 텍스트와 검정 배경 숨기기
+            blackout.style.display = 'none'; // 검정 배경 숨기기
+            document.getElementById('text').style.display = 'none'; // 첫 번째 텍스트 숨기기
+            document.getElementById('text2').style.display = 'none'; // 두 번째 텍스트 숨기기
+
+        }, 7000);  
+
+        // 클릭 이벤트 추가: cat1.png 클릭 시 cat2.png로 변경
+        document.getElementById('clickableImage').addEventListener('click', function() {
+            this.src = 'cat2.png'; // 이미지 변경
+            document.getElementById('text3').style.display = 'block'; // text3 표시
+
+            // text4는 2초 후에 표시
+            setTimeout(() => {
+                document.getElementById('text4').style.display = 'block'; // text4 표시
+                
+                // 2초 후 cat2.png를 cat3.png로 변경
+                setTimeout(() => {
+                    this.src = 'cat3.png'; // cat3로 변경
+                }, 1000);
+            }, 2000);
+        });
+
+        // 마우스 커서를 따라다니는 원형 표시 (손전등 효과)
+        const circle = document.getElementById('circle');
+        let mouseX = 0, mouseY = 0;
+        let circleX = 0, circleY = 0;
+
+        document.addEventListener('mousemove', function(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animate() {
+            // 커서의 움직임을 부드럽게 따라오도록 설정 (lerp)
+            circleX += (mouseX - circleX) * 0.1;
+            circleY += (mouseY - circleY) * 0.1;
+
+            // 원이 마우스를 따라가도록 설정 (마우스보다 위쪽과 왼쪽에 위치)
+            circle.style.left = (circleX - circle.offsetWidth / 2 - 80) + 'px'; // 20px 왼쪽
+            circle.style.top = (circleY - circle.offsetHeight / 2 - 80) + 'px'; // 20px 위
+
+            requestAnimationFrame(animate);
+        }
+
+        // 애니메이션 시작
+        animate();
+    </script>
+</body>
+</html>
+
+
+
+
